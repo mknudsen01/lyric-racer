@@ -12,6 +12,10 @@ Racer.Binder.prototype = {
 
 Racer.Game = function(config){
   this.gameText = config.gameText;
+  this.counters = {
+    correct: 0,
+    incorrect: 0
+  };
 };
 
 Racer.Game.prototype = {
@@ -20,10 +24,28 @@ Racer.Game.prototype = {
   },
 
   keyPressed: function(event){
-    var pressedCharacter = this.getCharacter(event);
+    var pressedCharacter = this.getPressedCharacter(event);
+    if(pressedCharacter){
+      this.checkCorrect(pressedCharacter);
+    }
   },
 
-  getCharacter: function(event){
+  checkCorrect: function(character){
+    nextCorrectCharacter = this.gameText[this.counters.correct];
+    if(character == nextCorrectCharacter){
+      console.log("Yes!");
+      this.incrementCounter('correct');
+    } else {
+      console.log("No");
+      this.incrementCounter('incorrect');
+    }
+  },
+
+  incrementCounter: function(type){
+    this.counters[type]++;
+  },
+
+  getPressedCharacter: function(event){
     var _to_ascii = {
       '186': '59',
       '187': '61',
