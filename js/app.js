@@ -1,6 +1,14 @@
 var Racer = {};
 
+Racer.Binder = function(config){
+  this.game = config.game;
+};
 
+Racer.Binder.prototype = {
+  keyDownListener: function(){
+    $(document).on('keydown', this.game.keyPressed);
+  }
+};
 
 Racer.Game = function(config){
   this.gameText = config.gameText;
@@ -9,6 +17,10 @@ Racer.Game = function(config){
 Racer.Game.prototype = {
   printThing: function(){
     console.log(this.gameText);
+  },
+
+  keyPressed: function(event){
+    console.log(event.which);
   }
 };
 
@@ -17,5 +29,6 @@ $(document).ready(function(){
   Racer.game = new Racer.Game({
     gameText: gameText
   });
+  new Racer.Binder({game: Racer.game}).keyDownListener();
 });
 
