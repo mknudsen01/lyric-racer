@@ -35,10 +35,23 @@ Racer.Game.prototype = {
     if(character == nextCorrectCharacter){
       console.log("Yes!");
       this.incrementCounter('correct');
+      if(this.checkForVictory()){
+        this.resetCounters();
+      }
     } else {
       console.log("No");
       this.incrementCounter('incorrect');
     }
+  },
+
+  resetCounters: function(){
+    for(var counter in this.counters){
+      this.counters[counter] = 0;
+    }
+  },
+
+  checkForVictory: function(){
+    return (this.counters.correct === this.gameText.length)
   },
 
   incrementCounter: function(type){
