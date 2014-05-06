@@ -10,8 +10,22 @@ Racer.Binder.prototype = {
   }
 };
 
+Racer.View = function(){};
+
+Racer.View.prototype = {
+  updateIncorrectCount: function(counters){
+    console.log(counters.incorrect);
+    $('.incorrect p').html(counters.incorrect);
+  },
+
+  resetIncorrectCount: function(){
+    $('.incorrect p').html(0);
+  }
+};
+
 Racer.Game = function(config){
   this.gameText = config.gameText;
+  this.view = config.view;
   this.counters = {
     correct: 0,
     incorrect: 0
@@ -42,6 +56,7 @@ Racer.Game.prototype = {
       console.log("No");
       this.incrementCounter('incorrect');
     }
+    this.view.updateIncorrectCount(this.counters);
   },
 
   resetCounters: function(){
@@ -125,8 +140,10 @@ Racer.Game.prototype = {
 
 $(document).ready(function(){
   gameText = $('.text').text().trim();
+  Racer.view = new Racer.View();
   Racer.game = new Racer.Game({
-    gameText: gameText
+    gameText: gameText,
+    view: Racer.view
   });
   new Racer.Binder({game: Racer.game}).keyDownListener();
 });
