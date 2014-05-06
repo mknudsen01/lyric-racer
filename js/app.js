@@ -16,6 +16,10 @@ Racer.View.prototype = {
   updateIncorrectCount: function(counters){
     console.log(counters.incorrect);
     $('.incorrect p').html(counters.incorrect);
+  },
+
+  resetIncorrectCount: function(){
+    $('.incorrect p').html(0);
   }
 };
 
