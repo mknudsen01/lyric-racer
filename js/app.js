@@ -13,10 +13,11 @@ Racer.Binder.prototype = {
 Racer.View = function(){};
 
 Racer.View.prototype = {
-  showIncorrectCount: function(counters){
+  updateIncorrectCount: function(counters){
     console.log(counters.incorrect);
+    $('.incorrect p').html(counters.incorrect);
   }
-}
+};
 
 Racer.Game = function(config){
   this.gameText = config.gameText;
@@ -51,7 +52,7 @@ Racer.Game.prototype = {
       console.log("No");
       this.incrementCounter('incorrect');
     }
-    this.view.showIncorrectCount(this.counters);
+    this.view.updateIncorrectCount(this.counters);
   },
 
   resetCounters: function(){
