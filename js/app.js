@@ -20,6 +20,18 @@ Racer.View.prototype = {
 
   resetIncorrectCount: function(){
     $('.incorrect p').html(0);
+  },
+
+  buildLetter: function(text, index){
+    letter = $('.letter-template').html().trim();
+    $letter = $(letter);
+    $letter.html(text);
+    $letter.attr('class', index);
+    return $letter;
+  },
+
+  renderLetter: function(text, index){
+    $('.text').append(this.buildLetter(text, index));
   }
 };
 
@@ -33,8 +45,17 @@ Racer.Game = function(config){
 };
 
 Racer.Game.prototype = {
-  printThing: function(){
-    console.log(this.gameText);
+  init: function(){
+    this.renderGameText();
+  },
+
+  renderGameText: function(){
+    letters = this.gameText.split('');
+    var lettersLength = letters.length;
+    for(var i=0; i<lettersLength; i++){
+      var letter = letters[i];
+      this.view.renderLetter(letter, i);
+    }
   },
 
   keyPressed: function(event){
@@ -139,12 +160,13 @@ Racer.Game.prototype = {
 };
 
 $(document).ready(function(){
-  gameText = $('.text').text().trim();
+  gameText = $('.starter-text p').text().trim();
   Racer.view = new Racer.View();
   Racer.game = new Racer.Game({
     gameText: gameText,
     view: Racer.view
   });
   new Racer.Binder({game: Racer.game}).keyDownListener();
+  Racer.game.init();
 });
 
