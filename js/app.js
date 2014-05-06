@@ -14,7 +14,6 @@ Racer.View = function(){};
 
 Racer.View.prototype = {
   updateIncorrectCount: function(counters){
-    console.log(counters.incorrect);
     $('.incorrect p').html(counters.incorrect);
   },
 
@@ -26,12 +25,20 @@ Racer.View.prototype = {
     letter = $('.letter-template').html().trim();
     $letter = $(letter);
     $letter.html(text);
-    $letter.attr('class', index);
+    $letter.attr('class', 'letter-'+index);
     return $letter;
   },
 
   renderLetter: function(text, index){
     $('.text').append(this.buildLetter(text, index));
+  },
+
+  updateLetter: function(index){
+    $('.text').find('.letter-'+index).css('color', '#000');
+  },
+
+  clearText: function(){
+    $('.text').empty();
   }
 };
 
@@ -68,13 +75,14 @@ Racer.Game.prototype = {
   checkCorrect: function(character){
     nextCorrectCharacter = this.gameText[this.counters.correct];
     if(character == nextCorrectCharacter){
-      console.log("Yes!");
+      this.view.updateLetter(this.counters.correct);
       this.incrementCounter('correct');
       if(this.checkForVictory()){
         this.resetCounters();
+        this.view.clearText();
+        this.renderGameText();
       }
     } else {
-      console.log("No");
       this.incrementCounter('incorrect');
     }
     this.view.updateIncorrectCount(this.counters);
