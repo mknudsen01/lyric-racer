@@ -14,12 +14,31 @@ Racer.View = function(){};
 
 Racer.View.prototype = {
   updateIncorrectCount: function(counters){
-    console.log(counters.incorrect);
     $('.incorrect p').html(counters.incorrect);
   },
 
   resetIncorrectCount: function(){
     $('.incorrect p').html(0);
+  },
+
+  buildLetter: function(text, index){
+    letter = $('.letter-template').html().trim();
+    $letter = $(letter);
+    $letter.html(text);
+    $letter.attr('class', 'letter-'+index);
+    return $letter;
+  },
+
+  renderLetter: function(text, index){
+    $('.text').append(this.buildLetter(text, index));
+  },
+
+  updateLetter: function(index){
+    $('.text').find('.letter-'+index).css('color', '#000');
+  },
+
+  clearText: function(){
+    $('.text').empty();
   }
 };
 
@@ -33,8 +52,17 @@ Racer.Game = function(config){
 };
 
 Racer.Game.prototype = {
-  printThing: function(){
-    console.log(this.gameText);
+  init: function(){
+    this.renderGameText();
+  },
+
+  renderGameText: function(){
+    letters = this.gameText.split('');
+    var lettersLength = letters.length;
+    for(var i=0; i<lettersLength; i++){
+      var letter = letters[i];
+      this.view.renderLetter(letter, i);
+    }
   },
 
   keyPressed: function(event){
@@ -47,13 +75,14 @@ Racer.Game.prototype = {
   checkCorrect: function(character){
     nextCorrectCharacter = this.gameText[this.counters.correct];
     if(character == nextCorrectCharacter){
-      console.log("Yes!");
+      this.view.updateLetter(this.counters.correct);
       this.incrementCounter('correct');
       if(this.checkForVictory()){
         this.resetCounters();
+        this.view.clearText();
+        this.renderGameText();
       }
     } else {
-      console.log("No");
       this.incrementCounter('incorrect');
     }
     this.view.updateIncorrectCount(this.counters);
@@ -139,12 +168,13 @@ Racer.Game.prototype = {
 };
 
 $(document).ready(function(){
-  gameText = $('.text').text().trim();
+  gameText = $('.starter-text p').text().trim();
   Racer.view = new Racer.View();
   Racer.game = new Racer.Game({
     gameText: gameText,
     view: Racer.view
   });
   new Racer.Binder({game: Racer.game}).keyDownListener();
+  Racer.game.init();
 });
 
