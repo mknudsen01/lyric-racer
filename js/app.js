@@ -14,11 +14,11 @@ Racer.View = function(){};
 
 Racer.View.prototype = {
   updateIncorrectCount: function(counters){
-    $('.incorrect p').html(counters.incorrect);
+    $('.incorrect').find('.count').html(counters.incorrect);
   },
 
   resetIncorrectCount: function(){
-    $('.incorrect p').html(0);
+    $('.incorrect').find('.count').html(0);
   },
 
   buildLetter: function(text, index){
@@ -34,7 +34,7 @@ Racer.View.prototype = {
   },
 
   updateLetter: function(index){
-    $('.text').find('.letter-'+index).css('color', '#000');
+    $('.text').find('.letter-'+index).toggleClass('correct-letter');
   },
 
   clearText: function(){
