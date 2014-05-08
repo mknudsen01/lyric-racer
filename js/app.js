@@ -68,6 +68,11 @@ Racer.View.prototype = {
     $('.text').find('.line-'+lineNumber).removeClass('current-line-bar');
   },
 
+
+  fillFinishedBackground: function(lineNumber){
+    $('.line-'+lineNumber).css('background-color', '#1abc9c');
+  },
+
   moveToNextLine: function(){
     $('.text').animate({
       top: "-=37"
@@ -182,6 +187,7 @@ Racer.Game.prototype = {
   nextLineEvent: function(currentLineNumber){
     this.incrementLineNumberCounter();
     this.view.moveToNextLine();
+    this.view.fillFinishedBackground(currentLineNumber);
     this.view.removeCurrentLineClass(currentLineNumber);
     this.view.addCurrentLineClass(this.counters.lineNumber);
     this.counters.currentLetter = 0;
