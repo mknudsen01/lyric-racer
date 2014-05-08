@@ -58,6 +58,9 @@ Racer.View.prototype = {
   },
 
   addCurrentLineClass: function(lineNumber){
+    if(!lineNumber){
+      lineNumber = '0';
+    }
     $('.text').find('.line-'+lineNumber).addClass('current-line-bar');
   },
 
@@ -69,6 +72,12 @@ Racer.View.prototype = {
     $('.text').animate({
       top: "-=37"
     }, 50);
+  },
+
+  resetTextPosition: function(amountToMove){
+    $('.text').animate({
+      'top': '+='+amountToMove
+    }, 100, this.addCurrentLineClass);
   }
 };
 
@@ -88,8 +97,28 @@ Racer.Game.prototype = {
   init: function(){
     this.getLines();
     this.splitLines();
+    this.sanitizeLines();
     this.renderLines();
     this.view.addCurrentLineClass(0);
+  },
+
+  resetGame: function(){
+    this.view.clearText();
+    var amountToMove = (this.lines.length - 1) * 37;
+    this.view.resetTextPosition(amountToMove);
+    this.resetCounters();
+    this.renderLines();
+  },
+
+  sanitizeLines: function(){
+    for (var i=0; i< this.lines.length; i++){
+      console.log("line: ", i);
+      var line = this.lines[i];
+      if(line.text === ""){
+        this.lines.splice(i, 1);
+        i = -1;
+      }
+    }
   },
 
   renderLines: function(){
@@ -127,30 +156,35 @@ Racer.Game.prototype = {
   },
 
   checkCorrect: function(character){
-    var currentLine = this.counters.lineNumber;
-    var line = this.lines[currentLine];
-    console.log("line length: ", line.letters.length);
-    nextCorrectCharacter = line.text[this.counters.currentLetter];
+    var currentLineNumber = this.counters.lineNumber;
+    var line = this.lines[currentLineNumber];
+    var nextCorrectCharacter = line.text[this.counters.currentLetter];
     if(character == nextCorrectCharacter){
-      this.view.updateLetter(this.counters.currentLetter, currentLine);
-      this.incrementCorrectCounter();
-      this.incrementCurrentLetterCounter();
+      this.correctLetterPressed(currentLineNumber);
       if(this.lastLetterInLine(line)){
-        this.incrementLineNumberCounter();
-        this.view.moveToNextLine();
-        this.view.removeCurrentLineClass(currentLine);
-        this.view.addCurrentLineClass(this.counters.lineNumber);
-        this.counters.currentLetter = 0;
-      }
-      if(this.checkForVictory()){
-        this.resetCounters();
-        this.view.clearText();
-        this.renderGameText();
+        this.nextLineEvent(currentLineNumber);
+        if(this.checkForVictory()){
+          this.resetGame();
+        }
       }
     } else {
       this.incrementIncorrectCounter();
     }
     this.view.updateIncorrectCount(this.counters);
+  },
+
+  correctLetterPressed: function(currentLineNumber){
+    this.view.updateLetter(this.counters.currentLetter, currentLineNumber);
+    this.incrementCorrectCounter();
+    this.incrementCurrentLetterCounter();
+  },
+
+  nextLineEvent: function(currentLineNumber){
+    this.incrementLineNumberCounter();
+    this.view.moveToNextLine();
+    this.view.removeCurrentLineClass(currentLineNumber);
+    this.view.addCurrentLineClass(this.counters.lineNumber);
+    this.counters.currentLetter = 0;
   },
 
   lastLetterInLine: function(line){
@@ -168,7 +202,7 @@ Racer.Game.prototype = {
   },
 
   checkForVictory: function(){
-    return (this.counters.correct === this.gameText.length);
+    return (this.counters.lineNumber === this.lines.length);
   },
 
   incrementCorrectCounter: function(type){
