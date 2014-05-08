@@ -79,10 +79,22 @@ Racer.View.prototype = {
     }, 50);
   },
 
+  roundTop: function(lineNumber){
+    $(".line-"+lineNumber).css('border-top-left-radius', "3px");
+    $(".line-"+lineNumber).css('border-top-right-radius', "3px");
+    $(".line-"+lineNumber).find(".letter-0").css("border-top-left-radius","3px");
+  },
+
   resetTextPosition: function(amountToMove){
     $('.text').animate({
       'top': '+='+amountToMove
-    }, 100, this.addCurrentLineClass);
+    }, 200, this.addCurrentLineClass);
+  },
+
+  reduceOpacity: function(lineNumber){
+    $('.line-'+lineNumber).animate({
+      opacity: "-=.5"
+    }, 1000);
   }
 };
 
@@ -188,6 +200,9 @@ Racer.Game.prototype = {
     this.view.moveToNextLine();
     this.view.fillFinishedBackground(currentLineNumber);
     this.view.removeCurrentLineClass(currentLineNumber);
+    this.view.reduceOpacity(currentLineNumber -1 );
+    this.view.reduceOpacity(this.counters.lineNumber - 1);
+    this.view.roundTop(this.counters.lineNumber - 1);
     this.view.addCurrentLineClass(this.counters.lineNumber);
     this.counters.currentLetter = 0;
   },
