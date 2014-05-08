@@ -29,12 +29,28 @@ Racer.View.prototype = {
     return $letter;
   },
 
-  renderLetter: function(text, index){
-    $('.text').append(this.buildLetter(text, index));
+  buildLine: function(lineNumber){
+    line = $('.line-template').html().trim();
+    $line = $(line);
+    $line.attr('class', 'line-'+lineNumber);
+    return $line
   },
 
-  updateLetter: function(index){
-    $('.text').find('.letter-'+index).toggleClass('correct-letter');
+  renderLine: function(line){
+    $('.text').append(this.buildLine(line.lineNumber));
+    var lineLength = line.letters.length;
+    for (var i=0; i < lineLength; i++){
+      var letter = line.letters[i];
+      this.renderLetter(letter.text, letter.position, line.lineNumber);
+    }
+  },
+
+  renderLetter: function(text, index, lineNumber){
+    $('.line-'+lineNumber).append(this.buildLetter(text, index));
+  },
+
+  updateLetter: function(letterPosition, lineNumber){
+    $('.line-'+lineNumber).find('.letter-'+letterPosition).toggleClass('correct-letter');
   },
 
   clearText: function(){
@@ -47,21 +63,44 @@ Racer.Game = function(config){
   this.view = config.view;
   this.counters = {
     correct: 0,
-    incorrect: 0
+    incorrect: 0,
+    lineNumber: 0,
+    currentLetter: 0
   };
+  this.lines = [];
 };
 
 Racer.Game.prototype = {
   init: function(){
+    this.getLines();
+    this.splitLines();
     this.renderGameText();
   },
 
   renderGameText: function(){
-    letters = this.gameText.split('');
-    var lettersLength = letters.length;
-    for(var i=0; i<lettersLength; i++){
-      var letter = letters[i];
-      this.view.renderLetter(letter, i);
+    var linesLength = this.lines.length;
+    for (var i= 0; i<linesLength; i++){
+      var line = this.lines[i];
+      this.view.renderLine(line);
+    }
+  },
+
+  getLines: function(){
+    splitText = this.gameText.split('--');
+    for (var i=0; i<splitText.length; i++){
+      var line = splitText[i].trim();
+      this.addLine(line, i);
+    }
+  },
+
+  addLine: function(lineText, position){
+    this.lines.push(new Racer.Line(lineText, position));
+  },
+
+  splitLines: function(){
+    var linesLength = this.lines.length;
+    for (var i=0; i< linesLength; i++){
+      this.lines[i].splitLine();
     }
   },
 
@@ -73,19 +112,35 @@ Racer.Game.prototype = {
   },
 
   checkCorrect: function(character){
-    nextCorrectCharacter = this.gameText[this.counters.correct];
+    var currentLine = this.counters.lineNumber;
+    var line = this.lines[currentLine];
+    console.log("line length: ", line.letters.length);
+    nextCorrectCharacter = line.text[this.counters.currentLetter];
     if(character == nextCorrectCharacter){
-      this.view.updateLetter(this.counters.correct);
-      this.incrementCounter('correct');
+      this.view.updateLetter(this.counters.currentLetter, currentLine);
+      this.incrementCorrectCounter();
+      this.incrementCurrentLetterCounter();
+      if(this.lastLetterInLine(line)){
+        this.incrementLineNumberCounter();
+        this.counters.currentLetter = 0;
+      }
       if(this.checkForVictory()){
         this.resetCounters();
         this.view.clearText();
         this.renderGameText();
       }
     } else {
-      this.incrementCounter('incorrect');
+      this.incrementIncorrectCounter();
     }
     this.view.updateIncorrectCount(this.counters);
+  },
+
+  lastLetterInLine: function(line){
+    return this.counters.currentLetter === line.letters.length;
+  },
+
+  resetCounter: function(type){
+    this.counters[type] = 0;
   },
 
   resetCounters: function(){
@@ -95,11 +150,23 @@ Racer.Game.prototype = {
   },
 
   checkForVictory: function(){
-    return (this.counters.correct === this.gameText.length)
+    return (this.counters.correct === this.gameText.length);
   },
 
-  incrementCounter: function(type){
-    this.counters[type]++;
+  incrementCorrectCounter: function(type){
+    this.counters.correct++;
+  },
+
+  incrementIncorrectCounter: function(type){
+    this.counters.incorrect++;
+  },
+
+  incrementLineNumberCounter: function(type){
+    this.counters.lineNumber++;
+  },
+
+  incrementCurrentLetterCounter: function(type){
+    this.counters.currentLetter++;
   },
 
   getPressedCharacter: function(event){
@@ -164,6 +231,34 @@ Racer.Game.prototype = {
     if(character != "shift"){
       return character;
     }
+  }
+};
+
+Racer.Letter = function(text, position){
+  this.text = text;
+  this.position = position;
+};
+
+Racer.Letter.prototype = {};
+
+Racer.Line = function(text, lineNumber){
+  this.text = text;
+  this.lineNumber = lineNumber;
+  this.letters = [];
+};
+
+Racer.Line.prototype = {
+  splitLine: function(){
+    var splitLine = this.text.split('');
+    var splitLineLength = splitLine.length;
+    for ( var i=0; i<splitLineLength; i++){
+      var letter = splitLine[i];
+      this.createLetter(letter, i);
+    }
+  },
+
+  createLetter: function(text, position){
+    this.letters.push(new Racer.Letter(text, position));
   }
 };
 
