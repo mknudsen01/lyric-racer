@@ -243,8 +243,17 @@ Racer.Game.prototype = {
       '173': '45',
     };
 
+    var ignores = {
+      "27": "nope", //escape
+      "37": "nope",
+      "38": "nope",
+      "39": "nope",
+      "40": "nope",
+      "91": "nope"
+    };
+
     var shiftUps = {
-      "16": "shift",
+      "16": "nope", //shift
       "32": " ",
       "96": "~",
       "49": "!",
@@ -259,7 +268,6 @@ Racer.Game.prototype = {
       "48": ")",
       "45": "_",
       "61": "+",
-      "91": "{",
       "93": "}",
       "92": "|",
       "59": ":",
@@ -268,9 +276,10 @@ Racer.Game.prototype = {
       "46": ">",
       "47": "?"
     };
-
-
-    event.preventDefault();
+    console.log(event.which);
+    if(event.which === 32 || event.which === 91){
+      event.preventDefault();
+    }
 
     var characterCode = event.which;
     var character = '';
@@ -282,11 +291,13 @@ Racer.Game.prototype = {
       character = String.fromCharCode(characterCode + 32);
     } else if(event.shiftKey && shiftUps.hasOwnProperty(characterCode)) {
       character = shiftUps[characterCode];
+    } else if(ignores.hasOwnProperty(characterCode)){
+      character = ignores[characterCode];
     } else {
       character = String.fromCharCode(characterCode);
     }
-
-    if(character != "shift"){
+    console.log(character);
+    if(character != "nope"){
       return character;
     }
   }
