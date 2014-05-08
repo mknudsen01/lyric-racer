@@ -30,20 +30,11 @@ body {
   font-size: 2em;
   color: #999999;
   transition: all .3s ease;
-  z-index:2;
 }
 
 .current-line-bar {
-  position: absolute;
-  top: 98px;
-  left: 240px;
-  height: 39px;
-  width: 60%;
-  opacity: 0.1;
-
-  background-color: #00ffff;
+  background-color: #A4E0F0;
 }
-
 
 .correct-letter {
   color: #000;

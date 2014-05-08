@@ -33,7 +33,7 @@ Racer.View.prototype = {
     line = $('.line-template').html().trim();
     $line = $(line);
     $line.attr('class', 'line-'+lineNumber);
-    return $line
+    return $line;
   },
 
   renderLine: function(line){
@@ -45,8 +45,8 @@ Racer.View.prototype = {
     }
   },
 
-  renderLetter: function(text, index, lineNumber){
-    $('.line-'+lineNumber).append(this.buildLetter(text, index));
+  renderLetter: function(text, position, lineNumber){
+    $('.line-'+lineNumber).append(this.buildLetter(text, position));
   },
 
   updateLetter: function(letterPosition, lineNumber){
@@ -55,6 +55,20 @@ Racer.View.prototype = {
 
   clearText: function(){
     $('.text').empty();
+  },
+
+  addCurrentLineClass: function(lineNumber){
+    $('.text').find('.line-'+lineNumber).addClass('current-line-bar');
+  },
+
+  removeCurrentLineClass: function(lineNumber){
+    $('.text').find('.line-'+lineNumber).removeClass('current-line-bar');
+  },
+
+  moveToNextLine: function(){
+    $('.text').animate({
+      top: "-=37"
+    }, 50);
   }
 };
 
@@ -74,10 +88,11 @@ Racer.Game.prototype = {
   init: function(){
     this.getLines();
     this.splitLines();
-    this.renderGameText();
+    this.renderLines();
+    this.view.addCurrentLineClass(0);
   },
 
-  renderGameText: function(){
+  renderLines: function(){
     var linesLength = this.lines.length;
     for (var i= 0; i<linesLength; i++){
       var line = this.lines[i];
@@ -122,6 +137,9 @@ Racer.Game.prototype = {
       this.incrementCurrentLetterCounter();
       if(this.lastLetterInLine(line)){
         this.incrementLineNumberCounter();
+        this.view.moveToNextLine();
+        this.view.removeCurrentLineClass(currentLine);
+        this.view.addCurrentLineClass(this.counters.lineNumber);
         this.counters.currentLetter = 0;
       }
       if(this.checkForVictory()){
