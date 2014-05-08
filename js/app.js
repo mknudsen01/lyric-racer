@@ -117,7 +117,6 @@ Racer.Game.prototype = {
 
   sanitizeLines: function(){
     for (var i=0; i< this.lines.length; i++){
-      console.log("line: ", i);
       var line = this.lines[i];
       if(line.text === ""){
         this.lines.splice(i, 1);
@@ -245,10 +244,8 @@ Racer.Game.prototype = {
 
     var ignores = {
       "27": "nope", //escape
-      "37": "nope",
-      "38": "nope",
-      "39": "nope",
-      "40": "nope",
+      "38": "nope", //up
+      "40": "nope", //down
       "91": "nope"
     };
 
@@ -276,7 +273,6 @@ Racer.Game.prototype = {
       "46": ">",
       "47": "?"
     };
-    console.log(event.which);
     if(event.which === 32 || event.which === 91){
       event.preventDefault();
     }
@@ -289,14 +285,13 @@ Racer.Game.prototype = {
 
     if(!event.shiftKey && (characterCode>=65 && characterCode<=90)){
       character = String.fromCharCode(characterCode + 32);
-    } else if(event.shiftKey && shiftUps.hasOwnProperty(characterCode)) {
-      character = shiftUps[characterCode];
     } else if(ignores.hasOwnProperty(characterCode)){
       character = ignores[characterCode];
+    }  else if(event.shiftKey && shiftUps.hasOwnProperty(characterCode)) {
+      character = shiftUps[characterCode];
     } else {
       character = String.fromCharCode(characterCode);
     }
-    console.log(character);
     if(character != "nope"){
       return character;
     }
