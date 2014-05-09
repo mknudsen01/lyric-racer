@@ -22,11 +22,15 @@ body {
   font-size: 1.5em;
 }
 
+.audio-container, audio {
+  width: 100%;
+}
+
 .text {
   position: relative;
   display: block;
   width: 70%;
-  margin: 5% auto;
+  margin: 7% auto;
   font-size: 2em;
   color: #2c3e50;
   transition: all .3s ease;
