@@ -262,6 +262,7 @@ Racer.Game.prototype = {
     };
 
     var ignores = {
+      "8" : "nope", //backspace
       "27": "nope", //escape
       "38": "nope", //up
       "40": "nope", //down
@@ -292,7 +293,7 @@ Racer.Game.prototype = {
       "46": ">",
       "47": "?"
     };
-    if(event.which === 32 || event.which === 91){
+    if(event.which === 32 || event.which === 91 || event.which === 8){
       event.preventDefault();
     }
 
